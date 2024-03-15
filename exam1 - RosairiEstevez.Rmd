@@ -1,0 +1,349 @@
+---
+title: "Exam 1 - Rosairi Estevez"
+output:
+  pdf_document:
+    toc: true
+  html_document:
+    toc: true
+  word_document:
+    toc: true
+editor_options:
+  chunk_output_type: console
+  markdown:
+    wrap: 72
+---
+
+### Rosairi Estevez
+
+### PSY V0500 Statistical Methods in Psychology
+
+### March 14, 2024
+
+### Exam 1
+
+```{r}
+library(ggplot2)
+```
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+attach(brfss22)
+```
+
+*The questions are worth 120 points. You have 120 minutes to do the
+exam, one point per minute.* *All answers should submitted
+electronically. Please submit all relevant computer files as a Slack
+message to me (perhaps just a message with GitHub link). I prefer .Rmd
+files **along with knit output,** md or html is fine. Graphs should be
+'export'. Or you can save output and code as pdf or rtf if you must.*
+*You may refer to your books, notes, calculator, computer, etc. The exam
+is "open book."* *However, you must not refer to anyone else, either in
+person or electronically, during the exam time. For instance, since
+these exam questions are newly created, posting questions or copying
+answers on Discord or WhatsApp groups or online homework helping sites
+or forums (such as Chegg, Yahoo answers or others) is a violation. Don't
+upload to public GitHub site until end of exam.* *You must do all work
+on your own. Cheating is harshly penalized.* *Good luck. Stay cool.*
+
+The first questions do not require any work in R (although you might
+find it convenient, I'm not stopping you) -- I will provide some summary
+data and you can construct hypothesis tests on your own. They're meant
+to test your understanding of the stats, apart from coding. Subsequent
+questions require R coding.
+
+We will look at marijuana usage since this is an important research
+topic of many of the faculty here. While BRFSS asks how many days (of
+last 30) a person used that, I recode into just zero (for zero days) and
+one (for one or more days), `use_marijan`.
+
+1.  (25 points) I've run crosstabs (just use these data as provided) of
+    marijuana usage with Age (as in lab, I give the midpoint of the age
+    range). It's interesting to explore usage rates by age to see how
+    that varies.
+
+Combine some or all of these to form one or more hypothesis tests about
+differences. Explain carefully the question(s) and answer(s) of the
+hypothesis test(s). I expect that different people may choose different
+levels of significance. Please provide estimate, standard error, t-stat
+and a p-value for each hypothesis test and a confidence interval.
+**Write a paragraph** explaining each test (carefully noting what is the
+null hypothesis) and explaining the results of that test along with what
+assumptions are needed for the test to be valid.
+
+```{r eval=FALSE}
+xtabs(~ use_marijan + Age_midpt)
+                         Age_midpt
+use_marijan   21   27   32   37   42   47   52   57   62   67   72   77   82
+          0 3737 3117 3675 4530 5069 4949 6273 6960 8520 9699 9275 7154 7963
+          1 1311  990 1098 1050 1073  828  820  936 1111 1066  758  311  105
+```
+
+`Ho (Null Hypothesis): Group A = Group B` There will be no differences
+between proportions of 21 - 27 year olds and 32 - 37 year olds in terms
+of marijuana use, they will be the same.
+
+`Ha (Alt Hypothesis): Group A  ≠ Group B` There will be differences
+between proportions of 21 - 27 years olds and 32-37 year olds in terms
+of marijuana use, they will not be the same.
+
+sig. level = 0.05 95%
+
+Group A = Age 21 - 27 of marijuana users n = 9,155
+
+marijuana users = 2,301
+
+p1 = 0.251
+
+Group B = Age 32 - 37 of marijuana users n = 10,353
+
+marijuana users = 2,148
+
+p2 = 0.207
+
+`point estimate` = 0.251 - 0.207 = 0.044
+
+`standard error` = 0.006
+
+`confidence interval` = (0.032, 0.055)
+
+`test statistic` = 7.287
+
+`p val` = 3.178e-13
+
+My hypothesis test regarded ages 21 - 27 (Group A) versus ages 32 - 37
+(Group B) and their marijuana uses. Testing whether the proportions of
+each group would either be the same (Ho: Group A = Group B) or would
+differ (Ha: Group A ≠ Group B). We *reject null hypothesis* because the
+t-stat which is 7.287 does not fall within the 95% confidence intervals
+proportion (0.032, 0.055) nor in the 95% region of acceptance (-1.96,
+1.96). Meaning there is a significant difference in the proportions
+between the age groups and marijuana use.
+
+```{r}
+rm(list = ls())
+prop.test(x=c(2301, 2148), n=c(9155, 10353), alternative="two.sided", conf.level =0.95, correct = FALSE)
+```
+
+2.  (25 points) Continue to explore marijuana usage, now looking at
+    educational levels. Form a hypothesis test about differences in
+    rates (*not* levels). Explain carefully the question and answer of
+    the hypothesis test. I expect that different people may choose
+    different levels of significance. Please provide estimate, standard
+    error, t-stat and a p-value for the hypothesis test and a confidence
+    interval. **Write a short paragraph** explaining the test (carefully
+    noting what is the null hypothesis) and explaining the results of
+    that test along with what assumptions are needed for the test to be
+    valid.
+
+```{r eval=FALSE}
+educ_shortlabel <- fct_recode(EDUCA, "never" = "Never attended school or only kindergarten",
+                    "elementary" = "Grades 1 through 8 (Elementary)", 
+                    "some hs" = "Grades 9 through 11 (Some high school)",
+                    "hs" = "Grade 12 or GED (High school graduate)",
+                    "some coll" = "College 1 year to 3 years (Some college or technical school)",
+                    "degree" = "College 4 years or more (College graduate)",
+                    "Refused" = "Refused")
+
+xtabs(~ use_marijan + educ_shortlabel)
+                         educ_shortlabel
+use_marijan never elementary some hs    hs some coll  degree  Refused
+          0    95       1472    2642 20004     22747   34993     257
+          1     8        104     587  3297      3555    3958      16
+
+```
+
+`Ho (Null): Group 1 = Group 2` The rate of marijuana use between
+individuals who have college degrees versus individuals who only went to
+high school will be the same/no difference.
+
+`Ha (Alt): Group 1 ≠ Group 2` The rate of marijuana use between
+individuals who have college degrees or have only gone to high school
+will NOT be the same.
+
+sig. level = 0.05 95%
+
+Group 1 (Degree - marijuana) n = 38951 p1 = 3958/38951 = 0.102
+
+Group 2 (HS - marijuana) n = 20004 p2 = 3297/20004 = 0.165
+
+`point estimate` = 0.063
+
+`standard error` = 0.003
+
+`confidence interval` = (-0.069, -0.057)
+
+`test statistic` = -22.118
+
+`p val` = 0
+
+My hypothesis test compared marijuana use rates between individuals with
+degrees versus individuals who only completed HS. The null hypothesis is
+that there will be no difference in use rates between the two groups
+(Ho: Group 1 = Group 2), and my alternative hypothesis is that there
+will be a difference (Ha: Group 1 ≠ Group 2) We *reject the null
+hypothesis* due to the t-stat = -22.118 not being within the 95% region
+of acceptance (-1.96, 1.96) and falling outside the critical values.
+
+```{r}
+rm(list = ls())
+prop.test(x=c(3958, 3297), n=c(38951, 20004), alternative="two.sided", conf.level =0.95, correct = FALSE)
+```
+
+3.  (30 points) Now create some interesting graphs with ggplot on either
+    of the previous two topics: how marijuana use correlates with age or
+    education. Explain what conclusion you would draw from the graphs.
+    In what ways do the graphs illustrate or complicate the statistical
+    tests?
+
+*Conclusions I can draw from the graphs are that marijuana use was
+definetly higher in individuals who got degrees, and then close runner
+ups being individuals who had some college and high school.*
+
+The graphs illustrate the statistical test in some way where it clearly
+shows that there are significant differences in rates of marijuana use
+between the different educational levels. It seems that after hs is when
+the numbers drastically go up, so it can be a link with academic stress
+and so on.
+
+```{r}
+ggplot(brfss22, aes(x = educ_shortlabel, fill = MARIJAN1)) + geom_bar()
+```
+
+```{r}
+p <- ggplot(data = brfss22,
+            mapping = aes(x = MARIJAN1,
+                          y = educ_shortlabel))
+```
+
+```{r}
+p2 <- ggplot(data = brfss22,
+            mapping = aes(x = educ_shortlabel,
+                          y = MARIJAN1))
+```
+
+```{r}
+p + geom_point()
+```
+
+```{r}
+p2 + geom_point()
+```
+
+```{r}
+p + geom_point(color = "purple") + 
+  geom_smooth(method = "loess") +
+  scale_x_log10()
+```
+
+```{r}
+ggplot(brfss22, aes(x = MARIJAN1, fill = educ_shortlabel)) + geom_bar(position = "fill") + scale_fill_viridis_d(option="rocket")
+```
+
+```{r}
+p + geom_line()
+```
+
+4.  (40 points) Now expand the analysis to look at other correlates with
+    marijuana use.
+
+-   Choose a subgroup of the sample to consider and provide summary
+    statistics of that subgroup. Explain why this subgroup is
+    interesting.
+-   Form a hypothesis test about an interesting variable, explore
+    whether your chosen subgroup differs from the rest of sample. Please
+    provide both a p-value for the hypothesis test and a confidence
+    interval. Write a short paragraph explaining the test (carefully
+    noting what is the null hypothesis) and explaining the results of
+    that test.
+-   Using a k-nn classifier, can you find relevant information to
+    predict marijuana use? How good is the classifier? Discuss.
+-   Can you explain some other interesting information about this data?
+    Some interesting crosstabs? Some good hypothesis tests? Impress me.
+
+subgroup = adverse childhood experiences drugs **This subgroup is
+interesting since often experiences of physical abuse have been
+correlated towards behaviors of substance abuse and so on. It'd be
+interesting if people with adverse childhood experiences of punching
+either once or more than once have differences in marijuana uses.**
+
+`Ho = Individuals with and without ACEdrugs experiences will no difference in proportions of marijuana use`
+`Ha = Individuals with and without ACEdrugs experiences will have difference in proportions of marijuana use`
+
+group 1 - acepunch once + marijuana use
+
+n =
+
+group 2 - no acepunch more than once + marijuana use
+
+n =
+
+```{r}
+xtabs(~ brfss22$MARIJAN1 + brfss22$ACEPUNCH)
+```
+
+```{r}
+prop.table(table(brfss22$MARIJAN1, brfss22$ACEPUNCH))
+```
+
+```{r}
+brfss_ACE$ACEPUNCH_recode <- fct_recode(brfss_ACE$ACEPUNCH, 
+                                        "0" = "Adverse Childhood Exper, never: How often did your parents or adults in your home ever slap, hit, kick, punch or beat each other up",
+                                "0.5" = "once", 
+                                "1" = "more than once",
+                                NULL = "dont know not sure",
+                                NULL = "refused"
+)
+
+brfss_ACE$ACEPUNCH_recode <- as.numeric(levels(brfss_ACE$ACEPUNCH_recode))[brfss_ACE$ACEPUNCH_recode]
+
+```
+
+```{r}
+summary(MARIJAN1)
+```
+
+```{r}
+MARIJAN1_recode <- fct_recode(brfss22$MARIJAN1, 
+                                        "1" = "Yes, Adverse Childhood Exper, lived with someone who used illegal street drugs or who abused prescription medications",
+                                "0" = "No", 
+                                NULL = "dont know not sure",
+                                NULL = "refused"
+                            
+)
+
+summary(brfss_ACE$ACEDRUGS_recode)
+```
+
+```{r}
+brfss_ACE <- subset(brfss22, select_ACE)
+```
+
+```{r}
+select_ACE <- (ACEdidntask == 0)
+```
+
+```{r}
+ACEdidntask <- (as.numeric(is.na(brfss22$ACEDEPRS)) + 
+                        as.numeric(is.na(brfss22$ACEDRINK)) +
+                        as.numeric(is.na(brfss22$ACEDRUGS)) +
+                        as.numeric(is.na(brfss22$ACEPRISN)) +
+                        as.numeric(is.na(brfss22$ACEDIVRC)) +
+                        as.numeric(is.na(brfss22$ACEPUNCH)) +
+                        as.numeric(is.na(brfss22$ACEHURT1)) +
+                        as.numeric(is.na(brfss22$ACESWEAR)) +
+                        as.numeric(is.na(brfss22$ACETOUCH)) )
+```
+
+```{r}
+standardize_varb_to01 <- function(X_in) {
+  (X_in - min(X_in, na.rm = TRUE))/( max(X_in, na.rm = TRUE) - min(X_in, na.rm = TRUE)  )
+```
+
+```{r}
+X1 <- standardize_varb_to01(brfss_ACE$MARIJAN1)
+X2 <- brfss_ACE$ACEPUNCH_recode
+
+```
